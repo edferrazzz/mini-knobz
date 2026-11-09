@@ -1,0 +1,130 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLUGINS: "Bite Phat Kickside Wide Gasp"
+
+jobs:
+  windows:
+    name: Windows (VST3 + Gasp app)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -A x64
+      - name: Build
+        run: cmake --build build --config Release --parallel --target KnobzBite_VST3 KnobzPhat_VST3 KnobzKickside_VST3 KnobzWide_VST3 KnobzGasp_VST3 KnobzGasp_Standalone knobz_tests
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Collect
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          foreach ($p in $env:PLUGINS.Split(' ')) {
+            Copy-Item -Recurse "build/Knobz$($p)_artefacts/Release/VST3/Knobz $p.vst3" "dist/Knobz $p.vst3"
+          }
+          Copy-Item "build/KnobzGasp_artefacts/Release/Standalone/Knobz Gasp.exe" "dist/Knobz Gasp.exe"
+          Get-ChildItem -Recurse dist -Include *.pdb,*.lib,*.exp | Remove-Item
+      - name: Installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $iscc)) { choco install innosetup -y --no-progress; }
+          $v = (Select-String -Path CMakeLists.txt -Pattern 'project\(MiniKnobz VERSION ([0-9.]+)').Matches[0].Groups[1].Value
+          & $iscc "/DAppVersion=$v" installer/MiniKnobz.iss
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Publish installer to the repo
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force Release/Windows | Out-Null
+          Copy-Item "dist/Mini Knobz * Instalador.exe" Release/Windows/
+          $v = (Select-String -Path CMakeLists.txt -Pattern 'project\(MiniKnobz VERSION ([0-9.]+)').Matches[0].Groups[1].Value
+          $vst = Get-ChildItem dist -Directory -Filter *.vst3 | ForEach-Object { $_.FullName }
+          Compress-Archive -Force -Path $vst -DestinationPath "Release/Windows/Mini Knobz $v VST3 Windows.zip"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Release/Windows
+          git diff --cached --quiet
+          if ($LASTEXITCODE) {
+            git commit -m "Windows installer from CI (MSVC) [skip ci]"
+            for ($i = 0; $i -lt 5; $i++) { git pull --rebase origin main; git push origin HEAD:main; if (!$LASTEXITCODE) { break }; Start-Sleep 10 }
+          }
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mini-knobz-windows-${{ github.sha }}
+          path: dist/
+          retention-days: 14
+
+  macos:
+    name: macOS (VST3 + AU + Gasp app)
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+      - name: Build
+        run: |
+          T=""
+          for p in $PLUGINS; do T="$T Knobz${p}_VST3 Knobz${p}_AU"; done
+          cmake --build build --config Release --parallel --target $T KnobzGasp_Standalone knobz_tests
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Installer
+        run: |
+          V=$(sed -n 's/^project(MiniKnobz VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          mkdir -p out zips
+          CHOICES=""; OUTLINE=""; REFS=""
+          for p in $PLUGINS; do
+            id=$(echo "$p" | tr '[:upper:]' '[:lower:]')
+            mkdir -p "pkg/$id/vst3" "pkg/$id/au"
+            cp -R "build/Knobz${p}_artefacts/Release/VST3/Knobz $p.vst3" "pkg/$id/vst3/"
+            cp -R "build/Knobz${p}_artefacts/Release/AU/Knobz $p.component" "pkg/$id/au/"
+            pkgbuild --root "pkg/$id/vst3" --identifier "com.audiomakers.knobz.$id.vst3" --version "$V" --install-location "/Library/Audio/Plug-Ins/VST3" "out/$id-vst3.pkg"
+            pkgbuild --root "pkg/$id/au" --identifier "com.audiomakers.knobz.$id.au" --version "$V" --install-location "/Library/Audio/Plug-Ins/Components" "out/$id-au.pkg"
+            OUTLINE="$OUTLINE<line choice=\"$id\"/>"
+            CHOICES="$CHOICES<choice id=\"$id\" title=\"Knobz $p\" description=\"VST3 + Audio Unit\"><pkg-ref id=\"com.audiomakers.knobz.$id.vst3\"/><pkg-ref id=\"com.audiomakers.knobz.$id.au\"/></choice>"
+            REFS="$REFS<pkg-ref id=\"com.audiomakers.knobz.$id.vst3\">$id-vst3.pkg</pkg-ref><pkg-ref id=\"com.audiomakers.knobz.$id.au\">$id-au.pkg</pkg-ref>"
+            (cd "pkg/$id/vst3" && ditto -c -k --keepParent "Knobz $p.vst3" "../../../zips/Knobz $p.vst3.zip")
+          done
+          mkdir -p pkg/app
+          cp -R "build/KnobzGasp_artefacts/Release/Standalone/Knobz Gasp.app" pkg/app/
+          pkgbuild --root pkg/app --identifier com.audiomakers.knobz.gasp.app --version "$V" --install-location "/Applications" out/gasp-app.pkg
+          OUTLINE="$OUTLINE<line choice=\"gaspapp\"/>"
+          CHOICES="$CHOICES<choice id=\"gaspapp\" title=\"Knobz Gasp (app)\" description=\"App em /Applications\"><pkg-ref id=\"com.audiomakers.knobz.gasp.app\"/></choice>"
+          REFS="$REFS<pkg-ref id=\"com.audiomakers.knobz.gasp.app\">gasp-app.pkg</pkg-ref>"
+          printf '<?xml version="1.0" encoding="utf-8"?><installer-gui-script minSpecVersion="2"><title>Mini Knobz %s</title><options customize="always" require-scripts="false" hostArchitectures="arm64,x86_64"/><choices-outline>%s</choices-outline>%s%s</installer-gui-script>' "$V" "$OUTLINE" "$CHOICES" "$REFS" > out/dist.xml
+          productbuild --distribution out/dist.xml --package-path out "Mini Knobz $V Instalador Mac.pkg"
+          (cd zips && zip -qr "../Mini Knobz $V VST3 Mac.zip" .)
+      - name: Publish Mac installer to the repo
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p Release/macOS
+          cp Mini\ Knobz\ *\ Instalador\ Mac.pkg Mini\ Knobz\ *\ VST3\ Mac.zip Release/macOS/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Release/macOS
+          if ! git diff --cached --quiet; then
+            git commit -m "macOS installer from CI [skip ci]"
+            for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && break; sleep 10; done
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mini-knobz-macos-${{ github.sha }}
+          path: Mini Knobz *
+          retention-days: 14
