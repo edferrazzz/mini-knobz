@@ -220,6 +220,28 @@ void writeDemos(const juce::File& dir) {
         Settings s { d.amount, d.mode, d.extra };
         writeWav(dir.getChildFile(juce::String(spec(d.id).name) + " " + spec(d.id).modes[(size_t) d.mode] + ".wav"), run(d.id, s, in));
     }
+    // GASP: a chord stab, then the swell that leads into it
+    juce::AudioBuffer<float> stab(2, (int) (sr * 1.6));
+    stab.clear();
+    for (double f0 : { 261.63, 329.63, 392.0, 493.88 })
+        for (int h = 1; h <= 8; ++h)
+            for (int i = 0; i < stab.getNumSamples(); ++i) {
+                const double t = i / sr;
+                const float v = (float) (0.09 / h * std::exp(-t * (2.2 + 0.4 * h)) * std::sin(2.0 * juce::MathConstants<double>::pi * f0 * h * t)
+                                         * juce::jmin(1.0, t * 400.0));
+                stab.addSample(0, i, v);
+                stab.addSample(1, i, v * (h % 2 ? 1.0f : 0.85f));
+            }
+    writeWav(dir.getChildFile("GASP original.wav"), stab);
+    for (int style : { 0, 1, 3 }) {
+        GaspRequest r;
+        r.sampleRate = sr;
+        r.bpm = 100.0;
+        r.size = 0.7f;
+        r.style = style;
+        r.includeOriginal = true;
+        writeWav(dir.getChildFile("GASP " + juce::String(spec(PluginId::gasp).modes[(size_t) style]) + ".wav"), renderGasp(stab, r).audio);
+    }
 }
 
 // ---- editor snapshots -------------------------------------------------------
