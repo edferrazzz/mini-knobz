@@ -369,7 +369,8 @@ public:
         // bars
         auto bars = barsArea().toFloat();
         const float bw = 2.0f;
-        const float gap = (bars.getWidth() - bw * peaks.size()) / (float) juce::jmax<size_t>(1, peaks.size() - 1);
+        const float count = (float) peaks.size();
+        const float gap = (bars.getWidth() - bw * count) / std::max(1.0f, count - 1.0f);
         const float progress = p.isPreviewing() ? p.previewProgress() : 1.0f;
         for (size_t i = 0; i < peaks.size(); ++i) {
             const float h = juce::jmax(2.0f, peaks[i] * (bars.getHeight()));
