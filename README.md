@@ -17,4 +17,6 @@ JUCE 8, C++20, CMake. One target per plugin (`KNOBZ_PLUGIN` picks it); all share
 - CI (`.github/workflows/build.yml`): on push to main builds Windows (MSVC + Inno Setup, `installer/MiniKnobz.iss`, one checkbox per plugin) and macOS (universal VST3 + AU + Gasp app, `.pkg` with one choice per plugin) and commits the installers to `Release/`.
 - Update check: the gear reads `https://updates.audiomakers.club/mini-knobz.json` (`product: "mini-knobz"`, `latestVersion`, `downloadUrl`).
 
+Product docs, visual identity, screenshots, demo audio and the video script (Portuguese): [`docs/`](docs/README.md).
+
 Fonts: Space Grotesk and Inter (SIL Open Font License).
