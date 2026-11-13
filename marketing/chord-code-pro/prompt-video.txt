@@ -1,0 +1,35 @@
+Crie um vídeo vertical 9:16 (1080x1920), 34 a 37 segundos, estilo anúncio de plugin de música moderno, para Reels/TikTok. Idioma: português do Brasil.
+
+PRODUTO: "Chord Code Pro" da Audio Makers, plugin que cria progressões de acordes. O produtor escolhe tom, escala, estilo e vibe, aperta GERAR e recebe 4 (ou 8) acordes prontos para ouvir, ajustar e arrastar como MIDI para a DAW. Preço: R$37 (de R$97), pagamento único, Windows e Mac. Frase da marca: "Você traz a ideia. O Chord Code encontra os acordes." Nunca diga que o plugin "faz a música sozinho": ele dá a direção, a decisão é do produtor.
+
+ESTILO VISUAL: dark premium com calor laranja. Fundo quase preto (#07080A) com brilhos laranja difusos de baixa opacidade, visual clean, sem cabeçalho, sem pessoas falando para a câmera. Cor única de destaque: laranja #FF5A0A com gradiente até âmbar #FFB23D, usada só como luz (glow no botão GERAR, no card tocando e na palavra-chave do título). Nada de neon ou cores frias. Fontes: Space Grotesk Bold para títulos, Inter para textos. Títulos em duas partes: primeira em branco, segunda em laranja (ex.: "Gostou? / Trava."). Movimentos suaves tipo ease-out, sem bounce: slide, zoom em detalhes da interface, interface inclinada em 3D como um tablet com borda luminosa. Cortes sincronizados com uma batida de 90 BPM. Legendas palavra a palavra em branco, palavra-chave em laranja.
+
+IMPORTANTE: use as imagens anexadas da interface do plugin exatamente como são. Não redesenhe, não invente botões e não mude nomes de acordes nem textos da interface. Pode animar em volta delas (zoom, recorte, glow, cursor clicando, cards entrando um a um). No vertical, mostre a interface em recortes (cards, botão GERAR, seletor), porque a tela inteira fica pequena.
+
+ROTEIRO (dinâmico, começa pelo clique no GERAR):
+
+1) 0–2,5s — GANCHO. Tela preta. Só o botão GERAR (imagem gerar) aparece no centro com glow laranja. Um cursor clica, flash quente, e os 4 cards de acorde (imagem cards) caem um a um no tempo da batida enquanto a progressão toca. Texto grande: "1 clique." e depois "4 acordes." (em laranja). Narração: "Um clique. Quatro acordes."
+
+2) 2,5–5s — DOR. Um piano roll de DAW vazio (imagem piano-roll-midi, sem as notas, ou um piano roll escuro simples) com um beat tocando e o cursor piscando. Texto: "Beat pronto." / "E os acordes?". Narração: "Sabe quando o beat tá pronto e você trava nos acordes?"
+
+3) 5–8s — ESCOLHE. Recorte dos controles (imagem controles e dropdown-aberto): os valores trocam rápido no ritmo: TOM "A", ESCALA "MENOR NATURAL", ESTILO "R&B", VIBE "ROMÂNTICO". Texto: "Escolhe o clima". Narração: "No Chord Code você escolhe o tom, o estilo e a vibe..."
+
+4) 8–11s — GERA. Zoom no botão GERAR, clique, e os nomes dos acordes nos cards trocam 3 vezes seguidas, cada troca num tempo, com whoosh curto. Texto: "Cada GERAR," / "algo novo." Narração: "...aperta gerar. E cada vez vem uma progressão nova."
+
+5) 11–15,5s — OUVE. A interface inteira tocando (imagem interface-tocando) num tablet inclinado com borda laranja. O destaque laranja caminha de card em card junto com cada acorde (referência de movimento: cards-tocando.gif), barras pulsando. Selo pequeno embaixo: "SOM REAL DO PLUGIN". Aqui a música de fundo some e toca só o áudio progressao-som-real. Narração curta no início: "Escuta só."
+
+6) 15,5–18,5s — TRAVA. Close em 2 cards: o cadeado de cada um fecha em laranja; o botão VARIAÇÃO é clicado e só os cards destravados trocam de acorde. Texto: "Gostou?" / "Trava." Narração: "Gostou de um? Trava. E varia só o resto."
+
+7) 18,5–21,5s — QUALQUER ACORDE. Clique num card abre o seletor (imagem seletor-campo-harmonico), depois corta para a grade de todos os acordes (imagem seletor-todos-acordes) com o cursor passando e os botões acendendo. Texto: "Qualquer acorde." / "Até fora do tom." Narração: "Ou escolhe qualquer acorde, até fora do tom."
+
+8) 21,5–24,5s — MOLDA. Recorte de forma e ritmo (imagem forma-ritmo): a pílula laranja pula para ABERTO, depois STRUM, depois ARPEJO, em cada tempo. Texto: "Voicing. Ritmo." / "Do seu jeito." Narração: "Muda o voicing, o ritmo..."
+
+9) 24,5–28s — MIDI. O botão ARRASTAR MIDI (imagem arrastar-midi) é puxado para fora da interface até um piano roll de DAW; as notas laranja aparecem bloco por bloco (imagem piano-roll-midi). Texto: "Da ideia" / "ao MIDI." Narração: "...e arrasta o MIDI direto pra sua DAW."
+
+10) 28–31s — NÚMEROS. Números gigantes em Space Grotesk, um por tempo, com rótulo pequeno embaixo: "9 escalas", "13 estilos", "12 vibes", "7 timbres", "até 8 acordes". Narração: "Nove escalas, treze estilos, doze vibes."
+
+11) 31–35s — CTA. A caixa 3D do produto (imagem caixa-3d-transparente) no centro com glow laranja por trás. Texto grande: "Chord Code Pro", preço "R$37" grande com "de R$97" riscado em cinza, menor: "Pagamento único · Windows e Mac", e "Link na bio". Narração: "Chord Code Pro. Trinta e sete reais, pagamento único. Link na bio."
+
+12) 35–37s — FINAL. Ícone do Chord Code (imagem icone-chord-code) e logo Audio Makers (imagem logo-audiomakers), "@audiomakers.club" e a frase "Você traz a ideia." / "O Chord Code encontra os acordes." (segunda linha em laranja). Termina com o mesmo clique do GERAR do começo para o loop emendar.
+
+ÁUDIO: batida lo-fi/R&B leve a 90 BPM, bem baixa, por baixo da narração, abaixando quando a narração fala. Na cena 5 toca só o som do plugin (anexo progressao-som-real). SFX curtos de clique e whoosh nos cortes, bem baixos. Narração masculina jovem, brasileira, animada mas natural, de produtor pra produtor.
